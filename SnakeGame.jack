@@ -1,0 +1,229 @@
+// Snake Game Controller - SIMPLE VERSION for exam
+class SnakeGame {
+    field Snake snake;
+    field boolean running;
+    field boolean botMode;
+
+    constructor SnakeGame new() {
+        let snake = Snake.new();
+        let running = true;
+        let botMode = false;
+        return this;
+    }
+
+    method void dispose() {
+        do snake.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    method void run() {
+        var char key;
+        var int moveCount;
+        var String password;
+        
+        do Screen.clearScreen();
+        do showInstructions();
+        
+        // Admin authorization check
+        do Output.moveCursor(18, 10);
+        do Output.printString("Enter password for bot mode: ");
+        let password = Keyboard.readLine("");
+        
+        if (isAdminPassword(password)) {
+            let botMode = true;
+            do Output.moveCursor(19, 15);
+            do Output.printString("BOT MODE ACTIVATED!");
+            do Sys.wait(1000);
+        } else {
+            let botMode = false;
+            do Output.moveCursor(19, 15);
+            do Output.printString("Manual mode - Use arrow keys");
+            do Sys.wait(1000);
+        }
+        
+        do password.dispose();
+        do Screen.clearScreen();
+        
+        let moveCount = 0;
+        
+        while (running & (~snake.isGameOver())) {
+            let key = Keyboard.keyPressed();
+            
+            if (~botMode) {
+                // Manual control
+                if (key = 131) { do snake.changeDirection(1); }  // Up arrow
+                if (key = 133) { do snake.changeDirection(3); }  // Down arrow  
+                if (key = 130) { do snake.changeDirection(2); }  // Left arrow
+                if (key = 132) { do snake.changeDirection(0); }  // Right arrow
+            } else {
+                // Bot mode - SIMPLE AI
+                do botMakeDecision();
+            }
+            
+            if (key = 81) { let running = false; }   // Q to quit
+            if (key = 113) { let running = false; }  // q to quit
+            
+            // Move snake automatically
+            let moveCount = moveCount + 1;
+            if (moveCount > 8) {
+                do snake.move();
+                do snake.displayScore();
+                if (botMode) {
+                    do displayBotStatus();
+                }
+                let moveCount = 0;
+            }
+            
+            do Sys.wait(50);
+        }
+        
+        do gameOver();
+        return;
+    }
+
+    method void showInstructions() {
+        do Output.moveCursor(5, 15);
+        do Output.printString("AUTOMATIC SNAKE GAME");
+        do Output.moveCursor(7, 10);
+        do Output.printString("The snake moves automatically!");
+        do Output.moveCursor(9, 12);
+        do Output.printString("Use ARROW KEYS to steer");
+        do Output.moveCursor(11, 15);
+        do Output.printString("Eat the circles to grow");
+        do Output.moveCursor(13, 17);
+        do Output.printString("Press Q to quit");
+        do Output.moveCursor(15, 8);
+        do Output.printString("PASSWORD: ADMIN123 for bot mode");
+        return;
+    }
+
+    method void gameOver() {
+        do Output.moveCursor(8, 20);
+        do Output.printString("GAME OVER!");
+        do Output.moveCursor(10, 18);
+        do Output.printString("Final Score: ");
+        do Output.printInt(snake.getScore());
+        if (botMode) {
+            do Output.moveCursor(11, 15);
+            do Output.printString("Bot achieved this score!");
+        }
+        do Output.moveCursor(13, 15);
+        do Output.printString("Press ANY KEY to exit");
+        do Keyboard.readChar();
+        return;
+    }
+
+    method boolean isAdminPassword(String password) {
+        var String correctPassword;
+        var boolean isCorrect;
+        let correctPassword = "ADMIN123";
+        let isCorrect = isStringEqual(password, correctPassword);
+        do correctPassword.dispose();
+        return isCorrect;
+    }
+
+    method boolean isStringEqual(String str1, String str2) {
+        var int i;
+        var int len1, len2;
+        
+        let len1 = str1.length();
+        let len2 = str2.length();
+        
+        if (~(len1 = len2)) {
+            return false;
+        }
+        
+        let i = 0;
+        while (i < len1) {
+            if (~(str1.charAt(i) = str2.charAt(i))) {
+                return false;
+            }
+            let i = i + 1;
+        }
+        return true;
+    }
+
+    // SIMPLE BOT AI - Perfect for exam explanation!
+    method void botMakeDecision() {
+        var int bestDirection;
+        
+        // STEP 1: Try to go toward food
+        let bestDirection = getDirectionToFood();
+        
+        // STEP 2: Check if that direction is safe
+        if (snake.isDirectionSafe(bestDirection)) {
+            // Safe to go toward food - do it!
+            do snake.changeDirection(bestDirection);
+        } else {
+            // Food direction is dangerous - find any safe direction
+            let bestDirection = findAnySafeDirection();
+            if (bestDirection > -1) {
+                do snake.changeDirection(bestDirection);
+            }
+            // If no safe direction, snake will die (game over)
+        }
+        return;
+    }
+
+    // Calculate direction toward food using simple coordinate math
+    method int getDirectionToFood() {
+        var int foodX, foodY;
+        var int headX, headY;
+        var int deltaX, deltaY;
+        
+        let foodX = snake.getFoodX();
+        let foodY = snake.getFoodY();
+        let headX = snake.getHeadX();
+        let headY = snake.getHeadY();
+        
+        let deltaX = foodX - headX;
+        let deltaY = foodY - headY;
+        
+        // Simple logic: Move in direction of biggest difference
+        if (absValue(deltaX) > absValue(deltaY)) {
+            // Move horizontally
+            if (deltaX > 0) {
+                return 0;  // Food is to the right
+            } else {
+                return 2;  // Food is to the left
+            }
+        } else {
+            // Move vertically
+            if (deltaY < 0) {
+                return 1;  // Food is above
+            } else {
+                return 3;  // Food is below
+            }
+        }
+    }
+
+    // Find any safe direction (survival mode)
+    method int findAnySafeDirection() {
+        var int dir;
+        
+        let dir = 0;
+        while (dir < 4) {
+            if (snake.isDirectionSafe(dir)) {
+                return dir;  // Found a safe direction!
+            }
+            let dir = dir + 1;
+        }
+        
+        return -1;  // No safe direction (game will end)
+    }
+
+    method void displayBotStatus() {
+        do Output.moveCursor(1, 0);
+        do Output.printString("BOT MODE: AI is playing automatically");
+        return;
+    }
+
+    // Simple absolute value function
+    method int absValue(int value) {
+        if (value < 0) {
+            return -value;
+        }
+        return value;
+    }
+}
