@@ -235,6 +235,9 @@ call String.dispose 1
 pop temp 0
 call Screen.clearScreen 0
 pop temp 0
+push this 0
+call Snake.redrawAll 1
+pop temp 0
 push constant 0
 pop local 1
 label WHILE_EXP0

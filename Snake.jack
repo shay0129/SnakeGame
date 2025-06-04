@@ -113,13 +113,19 @@ class Snake {
             }
         }
         return;
-    }
-
-    method void drawFood() {
+    }    method void drawFood() {
         do Screen.setColor(true);
         do Screen.drawCircle(foodX * 16 + 8, foodY * 16 + 8, 6);
         return;
-    }    // HELPER METHODS FOR IMPROVED BOT AI
+    }
+
+    method void redrawAll() {
+        // Redraw the snake
+        do drawInitialSnake();
+        // Redraw the food
+        do drawFood();
+        return;
+    }// HELPER METHODS FOR IMPROVED BOT AI
     method int getDirection() {
         return direction;
     }

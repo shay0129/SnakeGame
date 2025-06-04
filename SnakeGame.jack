@@ -41,9 +41,11 @@ class SnakeGame {
             do Output.printString("Manual mode - Use arrow keys");
             do Sys.wait(1000);
         }
-        
-        do password.dispose();
+          do password.dispose();
         do Screen.clearScreen();
+        
+        // Redraw the snake and food after screen clear
+        do snake.redrawAll();
         
         let moveCount = 0;
         
