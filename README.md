@@ -65,12 +65,17 @@ This is an automatic Snake game written in the Jack programming language for the
 - **Snake Segments**: 16x16 pixel squares
 - **Food**: Circles with 6-pixel radius
 - **Game Speed**: Adjustable through move counter (currently every 8 cycles)
-- **Maximum Length**: 200 segments (entire screen)
-- The game keeps score and announces the winner at the end.
+- **Maximum Length**: 
+  - **Bot Mode**: ~13 segments (AI pathfinding limitations)
+  - **Manual Mode**: Up to 200 segments (theoretical maximum - entire screen)
+- The game keeps score and displays final score when game ends.
 
 ## Customization
-- You can add more questions or change existing ones in `Trivia.jack`.
-- You can change player names or add features in `Player.jack`.
+You can modify the following aspects of the game:
+- Adjust game speed by changing the move counter in `SnakeGame.jack`
+- Modify AI behavior in the bot mode decision logic
+- Change screen resolution or segment sizes (requires code adjustments)
+- Customize the admin password in the bot mode authentication
 
 ## Author
-Adapted and generated with the help of GitHub Copilot.
+Developed for Nand2Tetris Project 09 - adapted and enhanced with the help of GitHub Copilot.

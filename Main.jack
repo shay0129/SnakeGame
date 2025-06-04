@@ -14,7 +14,7 @@ class Main {
 
 // Usage:
 // on terminal:
-// cd "c:\Projects\SnakeGame"; .\nand2tetris\tools\JackCompiler.bat .
-// cd "c:\Projects\SnakeGame"; Move-Item *.vm vm_code\ -Force
+// cd "c:\Projects\\SnakeGame\SnakeGame"; .\nand2tetris\tools\JackCompiler.bat .
+// cd "c:\Projects\SnakeGame\SnakeGame"; Move-Item *.vm vm_code\ -Force
 //open VMEmulator:
-// C:\Projects\SnakeGame\nand2tetris\tools\VMEmulator.bat
+// C:\Projects\SnakeGame\SnakeGame\nand2tetris\tools\VMEmulator.bat
